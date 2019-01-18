@@ -6,9 +6,6 @@
 typedef struct config_t {
   bool repeat;
   bool debug;
-  int clk_pin_number;
-  bool has_clk_pin;
-  int output_pin_number;
   char *file_name;
   int period; // [ns]
 } config_t;

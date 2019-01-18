@@ -3,12 +3,11 @@
 
 #include <stdbool.h>
 
-#define PATTERN_MAX 2000
-#define LINE_MAX 200
-
 int get_pattern_len();
-bool get_pattern_at(int index);
+int get_signals_count();
+int get_pin_number_at(int sig);
+bool get_pattern_at(int sig, int time_unit);
 int load_pattern(const char *file_name);
-void print_pattern(int chars_per_line);
+void print_pattern();
 
 #endif

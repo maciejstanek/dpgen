@@ -2,3 +2,5 @@
 *.un~
 *.o
 build
+*.swp
+*.swo

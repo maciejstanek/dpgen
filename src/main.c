@@ -94,12 +94,8 @@ static void log_action(bool value)
 
 static void update_output(struct timespec *ts, int *index)
 {
-  bool do_toggle_clock = (*index == 0); // Do it after writing to output to eliminate jitter.
-  bool value = get_pattern_at((*index)++);
+  bool value = get_pattern_at(0, (*index)++); // TODO: not only #0
   set_output_pin_value(value);
-  if (do_toggle_clock) {
-    toggle_clock();
-  }
   if (config.debug) {
     log_action(value);
   }
