@@ -22,11 +22,13 @@ void print_help(char *argv0) {
   fprintf(stderr, "  -d               Print debug information.\n");
   fprintf(stderr, "  -h               Print this help message.\n");
   fprintf(stderr, "\n");
-  fprintf(stderr, "The pattern FILE contains a space separated table.\n");
-  fprintf(stderr, "The header contains GPIO pin numbers. Each row contains\n");
-  fprintf(stderr, "a sequence of zeros and ones to which the appriopriate\n");
-  fprintf(stderr, "GPIO are set at the given time. Example pattern files\n");
-  fprintf(stderr, "are located at '/usr/share/dpgen/pattern'.\n");
+  fprintf(stderr, "The pattern FILE is a space separated list starting with\n");
+  fprintf(stderr, "a number N defining an output pins count. Next, N pin\n");
+  fprintf(stderr, "numbers are listed. Then, N*T output values are read, where\n");
+  fprintf(stderr, "T is the pattern length in some arbitrary time units (defined\n");
+  fprintf(stderr, "by OPTIONs -f or -t). In case, the number of values is not\n");
+  fprintf(stderr, "divisible by N, it is assumed that all unspecified values are zeros.\n");
+  fprintf(stderr, "Each value can be either '0' or '1'.\n");
 }
 
 void parse_args(int argc, char *argv[], config_t *config)
