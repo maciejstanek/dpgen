@@ -5,9 +5,9 @@
 
 #include "arg_parser.h"
 
-void set_output_pin_value(bool value);
-void toggle_clock();
-void initialize_mraa(config_t *c);
+void initialize_mraa();
+void register_pin(int pin);
+void set_pin_value(int pin, bool value);
 void cleanup_mraa();
 
 #endif

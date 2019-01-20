@@ -57,7 +57,7 @@ static void initialize(int argc, char *argv[], struct timespec *ts)
   if (config.debug) {
     print_pattern(30);
   }
-  initialize_mraa(&config);
+  initialize_mraa();
   clock_gettime(CLOCK_MONOTONIC, ts);
 }
 
@@ -74,13 +74,13 @@ static void sleep_until(struct timespec *ts, int delay)
 #define MINIMAL_PERIOD_FOR_LOGGING 100000000 // 100 [ms]
 bool printed_minimal_period_warning = false;
 
-static void log_action(bool value)
+static void log_action(int pin, bool value)
 {
   if (config.period >= MINIMAL_PERIOD_FOR_LOGGING) {
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
-    snprintf(msg_buf, MSG_BUF_MAX, "%d.%09d -> %d", (int)ts.tv_sec,
-      (int)ts.tv_nsec, value);
+    snprintf(msg_buf, MSG_BUF_MAX, "%d.%09d -> %d:%d", (int)ts.tv_sec,
+      (int)ts.tv_nsec, pin, value);
     print_msg(MSG_DEBUG, msg_buf);
   }
   else {
@@ -94,23 +94,27 @@ static void log_action(bool value)
 
 static void update_output(struct timespec *ts, int *index)
 {
-  bool value = get_pattern_at(0, (*index)++); // TODO: not only #0
-  set_output_pin_value(value);
-  if (config.debug) {
-    log_action(value);
-  }
-  sleep_until(ts, config.period);
   if (*index >= get_pattern_len()) {
     if (config.repeat) {
       *index = 0;
       if (config.debug && config.period >= MINIMAL_PERIOD_FOR_LOGGING) {
-        print_msg(MSG_DEBUG, "Repeating pattern.");
       }
     }
     else {
       finalize(EXIT_SUCCESS);
     }
   }
+
+  for (int p = 0; p < get_signals_count(); p++) {
+    int pin = get_pin_number_at(p);
+    bool value = get_pattern_at(p, *index);
+    set_pin_value(pin, value);
+    if (config.debug) {
+      log_action(pin, value);
+    }
+  }
+  (*index)++;
+  sleep_until(ts, config.period);
 }
 
 static void loop(struct timespec *ts)

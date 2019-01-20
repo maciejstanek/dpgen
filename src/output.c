@@ -6,58 +6,60 @@
 #include "mraa/gpio.h"
 #include "printer.h"
 
-static mraa_gpio_context clk_pin = NULL;
-static mraa_gpio_context output_pin = NULL;
-static bool clk_pin_value = 0;
-static config_t *config = NULL;
+#define PIN_COUNT_MAX 20
 
-void set_output_pin_value(bool value) {
-  /* if (mraa_gpio_write(output_pin, value) != MRAA_SUCCESS) { */
-  /*   print_msg(MSG_WARNING, "Setting output value failed."); */
-  /* } */
+static mraa_gpio_context pins[PIN_COUNT_MAX];
+static int pin_map[PIN_COUNT_MAX];
+static int pin_count = 0;
+
+void set_pin_value(int pin, bool value) {
+  int pin_index = -1;
+  for (int i = 0; i < pin_count; i++) {
+    if (pin_map[i] = pin) {
+      pin_index = i;
+      break;
+    }
+  }
+  if (pin_index == -1) {
+    snprintf(msg_buf, MSG_BUF_MAX, "Pin #%d not found.", pin);
+    print_msg(MSG_WARNING, msg_buf);
+    return;
+  }
+  if (mraa_gpio_write(pins[pin_index], value) != MRAA_SUCCESS) {
+    snprintf(msg_buf, MSG_BUF_MAX, "Setting output value %d on pin #%d failed.",
+      value, pin);
+    print_msg(MSG_WARNING, msg_buf);
+  }
 }
 
-void toggle_clock() {
-  /* if (config->has_clk_pin) { */
-  /*   clk_pin_value = !clk_pin_value; */
-  /*   if (mraa_gpio_write(clk_pin, clk_pin_value) != MRAA_SUCCESS) { */
-  /*     print_msg(MSG_WARNING, "Toggling synchronization clock failed."); */
-  /*   } */
-  /* } */
-}
-
-void initialize_mraa(config_t *c)
+void initialize_mraa()
 {
-  config = c;
   snprintf(msg_buf, MSG_BUF_MAX, "Using 'mraa' %s (%s detected).",
     mraa_get_version(), mraa_get_platform_name());
   print_msg(MSG_INFO, msg_buf);
   mraa_init();
-  /* if (!(output_pin = mraa_gpio_init(config->output_pin_number))) { */
-  /*   print_msg(MSG_WARNING, "Initializing output pin failed."); */
-  /* } */
-  /* else if (mraa_gpio_dir(output_pin, MRAA_GPIO_OUT) != MRAA_SUCCESS) { */
-  /*   print_msg(MSG_WARNING, "Forcing output pin direction failed."); */
-  /* } */
-  /* if (config->has_clk_pin) { */
-  /*   if (!(clk_pin = mraa_gpio_init(config->clk_pin_number))) { */
-  /*     print_msg(MSG_WARNING, "Initializing synchronization clock pin failed."); */
-  /*   } */
-  /*   else if (mraa_gpio_dir(clk_pin, MRAA_GPIO_OUT) != MRAA_SUCCESS) { */
-  /*     print_msg(MSG_WARNING, "Forcing synchronization clock pin direction failed."); */
-  /*   } */
-  /* } */
+}
+
+void register_pin(int pin) {
+  if (!(pins[pin_count] = mraa_gpio_init(pin))) {
+    snprintf(msg_buf, MSG_BUF_MAX, "Initializing pin #%d failed.", pin);
+    print_msg(MSG_WARNING, msg_buf);
+    return;
+  }
+  else if (mraa_gpio_dir(pins[pin_count], MRAA_GPIO_OUT) != MRAA_SUCCESS) {
+    snprintf(msg_buf, MSG_BUF_MAX, "Forcing pin #%d direction failed.", pin);
+    print_msg(MSG_WARNING, msg_buf);
+    return;
+  }
+  pin_map[pin_count++] = pin;
 }
 
 void cleanup_mraa()
 {
-  /* if (mraa_gpio_close(output_pin) != MRAA_SUCCESS) { */
-  /*   print_msg(MSG_WARNING, "Closing output pin failed."); */
-  /* } */
-  /* if (config->has_clk_pin) { */
-  /*   if (mraa_gpio_close(clk_pin) != MRAA_SUCCESS) { */
-  /*     print_msg(MSG_WARNING, "Closing synchronization clock pin failed."); */
-  /*   } */
-  /* } */
+  while(pin_count--) {
+    if (mraa_gpio_close(pins[pin_count]) != MRAA_SUCCESS) {
+      snprintf(msg_buf, MSG_BUF_MAX, "Closing pin #%d failed.", pin_count);
+    }
+  }
   mraa_deinit();
 }
