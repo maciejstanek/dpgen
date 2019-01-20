@@ -55,9 +55,13 @@ static void initialize(int argc, char *argv[], struct timespec *ts)
     exit(EXIT_FAILURE);
   }
   if (config.debug) {
-    print_pattern(30);
+    print_pattern();
   }
   initialize_mraa();
+  for (int i = 0; i < get_signals_count(); i++) {
+    register_pin(get_pin_number_at(i));
+
+  }
   clock_gettime(CLOCK_MONOTONIC, ts);
 }
 
