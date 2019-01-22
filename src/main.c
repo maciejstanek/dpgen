@@ -75,7 +75,7 @@ static void sleep_until(struct timespec *ts, int delay)
   clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, ts, NULL);
 }
 
-#define MINIMAL_PERIOD_FOR_LOGGING 100000000 // 100 [ms]
+#define MINIMAL_PERIOD_FOR_LOGGING 50000000 // 50 [ms]
 bool printed_minimal_period_warning = false;
 
 static void log_action(int pin, bool value)
@@ -90,7 +90,7 @@ static void log_action(int pin, bool value)
   else {
     if (!printed_minimal_period_warning) {
       print_msg(MSG_DEBUG, "The requested frequency is too high to enable safe"
-        " actions logging. It can be 10 [Hz] max.");
+        " actions logging. It can be 20 [Hz] max.");
       printed_minimal_period_warning = true;
     }
   }
@@ -101,8 +101,6 @@ static void update_output(struct timespec *ts, int *index)
   if (*index >= get_pattern_len()) {
     if (config.repeat) {
       *index = 0;
-      if (config.debug && config.period >= MINIMAL_PERIOD_FOR_LOGGING) {
-      }
     }
     else {
       finalize(EXIT_SUCCESS);

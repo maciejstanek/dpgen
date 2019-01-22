@@ -15,7 +15,7 @@ static int pin_count = 0;
 void set_pin_value(int pin, bool value) {
   int pin_index = -1;
   for (int i = 0; i < pin_count; i++) {
-    if (pin_map[i] = pin) {
+    if (pin_map[i] == pin) {
       pin_index = i;
       break;
     }
