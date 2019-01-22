@@ -1,13 +1,13 @@
 Digital pattern generator
 =========================
 
-This is a digital pattern generator designed to run on boards with [`mraa`](https://github.com/maciejstanek/dpgen) library.
+This is a digital pattern generator designed to run on boards with [`mraa`](https://github.com/intel-iot-devkit/mraa) library.
 
 Installation
 ------------
 
 Call the following commands to install the generator:
-```
+```bash
 git clone https://github.com/maciejstanek/dpgen.git && cd dpgen
 mkdir build && cd build
 cmake ..
@@ -20,17 +20,17 @@ Usage
 -----
 
 Getting help:
-```
+```bash
 dpgen -h
 ```
 
 Generate a square wave on pin 13 with a frequency 30Hz:
-```
+```bash
 dpgen -r -f 30 /usr/share/dpgen/square.dpd
 ```
 
 Write a custom pattern (2b Gray code) and run it:
-```
+```bash
 # Two signals will be used.
 echo '2' > gray_2b.dpd
 # First one on pin 7, second one on pin 8.
